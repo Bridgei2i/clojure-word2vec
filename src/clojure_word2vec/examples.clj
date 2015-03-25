@@ -3,6 +3,11 @@
             [incanter.stats :as i-stat]))
 
 
+(defn read-filtered-dataset
+  [inpfile]
+  (with-open [r (clojure.java.io/reader inpfile)]
+    (mapv edn/read-string (line-seq r))))
+
 ;let's read the apple dataset and train a word2vec model on the data
 (def appvec
   (-> (read-filtered-dataset "resources/apple-data.txt") word2vec))
