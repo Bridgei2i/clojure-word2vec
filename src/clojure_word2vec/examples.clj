@@ -1,16 +1,19 @@
 (ns clojure-word2vec.examples
   (:require [clojure-word2vec.core :refer :all]
-            [incanter.stats :as i-stat]))
+            [incanter.stats :as i-stat]
+            [clojure.edn :as edn]
+            [clojure.java.io :as io]))
 
 
 (defn read-filtered-dataset
   [inpfile]
-  (with-open [r (clojure.java.io/reader inpfile)]
+  (with-open [r (io/reader (java.util.zip.GZIPInputStream.
+                  (io/input-stream inpfile)))]
     (mapv edn/read-string (line-seq r))))
 
 ;let's read the apple dataset and train a word2vec model on the data
 (def appvec
-  (-> (read-filtered-dataset "resources/apple-data.txt") word2vec))
+  (-> (read-filtered-dataset "resources/apple-data.txt.gz") word2vec))
 
 ;see the top view words in the vocabulary
 (take 20 (.getVocab appvec))

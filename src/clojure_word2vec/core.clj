@@ -1,8 +1,7 @@
 (ns clojure-word2vec.core
   (:require [clojure.java.io :as io]
-            [clojure.edn :as edn]
-            [clojure.core.matrix :as mat]
-            [clojure.core.matrix.operators :as matop]
+            ;[clojure.core.matrix :as mat]
+            ;[clojure.core.matrix.operators :as matop]
             [incanter.stats :as i-stat]
             )
   (:import [com.medallia.word2vec Word2VecTrainerBuilder Word2VecModel]
