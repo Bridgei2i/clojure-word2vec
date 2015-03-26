@@ -42,6 +42,8 @@ Find the closest words to a given word
 (get-matches model "woman")
 ```
 
+### A longer introduction is available in the [docs](https://github.com/Bridgei2i/clojure-word2vec/blob/master/doc/intro.md) .
+
 ## License
 
 Copyright © 2015 Bridgei2i 
