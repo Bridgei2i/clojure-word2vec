@@ -36,7 +36,7 @@ using a distance metric like
 
 To calculate the distance between 2 words, *g5* and *ipod*,
 we fetch the raw word vectors and compute distance using
-the [Incanter](Incanter.org) cosine-similarity API.
+the [Incanter](http://Incanter.org) cosine-similarity API.
 
 ```clojure
 (defn cosine-sim
@@ -137,6 +137,6 @@ The top few answers suggest that it is a card, and the manufacturer is ATI.
 ## Conclusion
 
 * Word2vec is an excellent tool to find co-occurances of words in a corpus. Depending on the kind of data, it may be possible to determine relationships as well.
-* We used the Apple dataset as it has content that was annotated with Part of Speech tags (such as nouns, verbs). For this exersize, we only used words that were nouns or were part of noun phrases. 
+* We used the Apple dataset as it has content that was annotated with Part of Speech tags (such as nouns, verbs). For this exercise, we only used words that were nouns or were part of noun phrases. 
 * Word2vec can tell us what is being discussed *about* something. We can see from the relations API that customers talking about Seagate (A hard disk manufacturer) are concerned about sizes, speed, performance and enclosures.
-*
+
