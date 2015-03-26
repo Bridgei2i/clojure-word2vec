@@ -1,114 +1,142 @@
 # Introduction to clojure-word2vec
 
-
-let's read the apple dataset and train a word2vec model on the data
+We'll use a dataset (consists of forum postings on Apple products) to try out the capabilities of word2vec.
+We read the Apple dataset and train a word2vec model on the data. This is a modified version
+of the Apple dataset, which can be downloaded [here] (http://times.cs.uiuc.edu/~wang296/Data/).
 
 ```clojure
 (def appvec
   (-> (read-filtered-dataset "resources/apple-data.txt.gz") word2vec))
 ```
 
-see the top view words in the vocabulary
+Let's view the top 20 words in the vocabulary
 
 ```clojure
 (take 20 (.getVocab appvec))
 ```
 
-the total number of words  in the vocabulary
+```
+("ipod" "drive" "problem" "computer" "itune" "apple" "disc" 
+"nano" "song" "thank" "mac" "os" "screen" "card" "time" 
+"system" "music" "g5" "display" "file")
+```
+
+The total number of words  in the vocabulary 
 
 ```clojure
 (.getVocabSize (.toThrift appvec))
 ```
-calculate the cosine similarity between 2 words
-this is done by fetching the raw word vectors and using
-incanter's cosine-similarity API
+    6813
+
+
+Given that word2vec transforms a word into a high dimension vector, we can
+compute the closeness of 2 words by comparing the corresponding word vectors
+using a distance metric like 
+[cosine similarity](http://en.wikipedia.org/wiki/Cosine_similarity)
+
+To calculate the distance between 2 words, *g5* and *ipod*,
+we fetch the raw word vectors and compute distance using
+the [Incanter](Incanter.org) cosine-similarity API.
 
 ```clojure
 (defn cosine-sim
   [model word1 word2]
   (let [rawvecfn  #(.getRawVector (.forSearch model) %)
-```
-calculate
 
-```clojure
 (cosine-sim appvec "g5" "ipod")
+
+```
+The resulting score is a value between 0 and 1, where a high score indicates
+that the words lie close to each other in the vector space model.
+```
+0.9988300697889931
 ```
 
-Some examples of the relations API
-in the original paper, the example offered was
-if Paris is related to France, Berlin is related to ?
+##  Some examples of the relations API:
+In the original paper, the example offered was:
+"if Paris is related to France, Berlin is related to ?"
 and the query would find Germany as the answer.
-in the Apple dataset (as with any other dataset),
+In the Apple dataset (as with any other dataset),
 the relationship found are usually noisy. Lets look at some
 good answers
 
-if nano is a 'kind of' ipod, then g3 is a
+If Nano is a 'kind of' ipod, (The Ipod Nano was a bestselling model of the Ipod line)
+then [g3](http://en.wikipedia.org/wiki/Power_Macintosh_G3_%28Blue_%26_White%29) is a
 
 ```clojure
 (get-relations appvec "nano" "ipod"  "g3")
 ```
+    ("mac" "imac" "ibook" "installation" "system")
 
-an ibook
-
-when we query for a G5 instead (a desktop computer)
-
-```clojure
-(get-relations appvec "nano" "ipod"  "g5")
-```
-
-we don't find a desktop in the top 5 answers
-
-if ghz is a measure of speed, then gb is a measure of
+If ghz is a measure of speed, then gb is a measure of
 
 ```clojure
 (get-relations appvec "ghz" "speed" "gb")
 ```
+    ("data" "hd" "backup" "size" "cache")
 
-data, the 4th item on the list
+We'd expect *memory* to be the right answer, but *data*, 
+the 1th item on the list, is a reasonable approximation.
 
-if 300gb is the measure of a drive, then 2ghz is a
+If 300gb is the measure of a drive, then 2ghz is a
 
 ```clojure
 (get-relations appvec "300gb" "drive" "2ghz")
 ```
+    ("imac" "system" "processor" "upgrade" "model")
+measure of a processor (3nd item)
 
-measure of a processor (2nd item)
-
-sub-type of a product :airport-extreme (a wifi base station made by apple)
-what's an ipod's type
+Airport is a product line for wifi basestations, and extreme is 
+one of the products in that line, (a wifi base station made by apple)
+what's a model in the ipod line?
 
 ```clojure
 (get-relations appvec "airport" "extreme" "ipod")
 ```
-nano (2nd item)
+    ("nano" "content" "library" "music" "shuffle")
+The *nano* (1nd item)
 
-we can use the get-matches API to return the words
-that are closest (by euclidean distance) to the argument
+---
+There's a lot of noise in the answers however.
+When we query for a [G5](http://en.wikipedia.org/wiki/Power_Mac_G5) 
+instead (a desktop computer)
 
+```clojure
+(get-relations appvec "nano" "ipod"  "g5")
+```
+    ("speed" "raid" "quad" "model" "performance")
+    
+we don't find a desktop in the top 5 answers.
+
+---
+
+We can use the *get-matches* API to return the words
+that are closest (by euclidean distance) to the queried word.
+Here are a few examples
+
+Radeon is a video card
 ```clojure
 (get-matches appvec "radeon")
 ```
+    ("card" "ati" "dual" "g5" "agp" "nvidia" "ghz" "graphic" "pcie" "model")
+The top few answers suggest that it is a card, and the manufacturer is ATI.
 
 ```clojure
 (get-matches appvec "seagate")
 ```
+    ("maxtor" "gb" "raid" "drive" "quad" "speed" "raptor" "performance" "digital" "enclosure")
 
 ```clojure
 (get-matches appvec "nano")
 ```
+    ("ipod" "gen" "track" "music" "shuffle" "content" "itune" "library" "play" "ipods")
 
-```clojure
-(get-matches appvec "projector")
-```
 
-```clojure
-(get-matches appvec "raid")
-```
 
-```clojure
-(get-matches appvec "quicktime")
-```
+---
+## Conclusion
 
-```clojure
-(get-matches appvec "powermac")
-```
+* Word2vec is an excellent tool to find co-occurances of words in a corpus. Depending on the kind of data, it may be possible to determine relationships as well.
+* We used the Apple dataset as it has content that was annotated with Part of Speech tags (such as nouns, verbs). For this exersize, we only used words that were nouns or were part of noun phrases. 
+* Word2vec can tell us what is being discussed *about* something. We can see from the relations API that customers talking about Seagate (A hard disk manufacturer) are concerned about sizes, speed, performance and enclosures.
+*
