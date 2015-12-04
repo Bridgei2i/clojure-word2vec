@@ -6,6 +6,12 @@ used by a bag-of-words, these word vectors can be used to compare 2 words and se
 
 This is a Clojure wrapper of Java implementation of word2vec [available here] (https://github.com/medallia/Word2VecJava).
 
+## Installation
+
+To include word2vec, add the following to your :dependencies section of project.clj
+
+[![Clojars Project](http://clojars.org/org.bridgei2i/word2vec/latest-version.svg)]
+
 ## Usage
 
 First import clojure-word2vec.core into your namespace
@@ -41,6 +47,8 @@ Find the closest words to a given word
 ```clojure
 (get-matches model "woman")
 ```
+
+### A longer introduction is available in the [docs](https://github.com/Bridgei2i/clojure-word2vec/blob/master/doc/intro.md) .
 
 ## License
 
