@@ -1,4 +1,16 @@
+
 # Introduction to clojure-word2vec
+
+Problem statement:
+When we want to classify or cluster data, the first step is to create a representation of data, usually called the Feature Vector. Datasets consisting of images or audio files have feature vectors that are already in numeric form. If we have text data, we have to convert words /characters into numbers. 
+
+For a number of years, the Bag of words approach was used to create a Feature Vector. This approach required the use of a dictionary which contains all the words used in the dataset.
+
+Assume that we have a dictionary consisting of the words {"the", "sleepy","happy","cat","dog"}. If we encounter 2 sentences :"the sleepy cat" and "the happy dog", we replace the words with the index in the dictionary. Thus "the sleepy cat" becomes "0,1,3", and "the happy dog" translates to "0,2,5" .
+
+However, the bag of words representation does not place similar words together (in a vector space model).  
+Word2Vec is a tool developed by Mikolov et al, improves on this by learning high-dimension representation in a vector space model, which places similar words together. 
+
 
 We'll use a dataset (consists of forum postings on Apple products) to try out the capabilities of word2vec.
 We read the Apple dataset and train a word2vec model on the data. This is a modified version
