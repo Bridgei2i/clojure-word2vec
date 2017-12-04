@@ -10,27 +10,36 @@
            [com.medallia.word2vec.util Common]))
 
 (defn word2vec
-   "Return a trained instance of Word2Vec,
+  "Return a trained instance of Word2Vec,
   The first argument is a seq of seqs, where each seq is a list of words.
   The rest of the arguments are hyperparameters used in training the
   neural net."
   ([sentences &
-    {:keys [ min-vocab-frequency window-size type layer-size
-             use-negative-samples downsampling-rate num-iterations num-threads]
+    {:keys [ min-vocab-frequency window-size type layer-size initial-learning-rate
+            use-negative-samples downsampling-rate num-iterations num-threads]
      :or { min-vocab-frequency 5
-           window-size 8
-           type NeuralNetworkType/CBOW
-           layer-size 5
-           use-negative-samples 25
-           downsampling-rate 1e-5
-           num-iterations 100
+          window-size 8
+          initial-learning-rate 0.05
+          type NeuralNetworkType/CBOW
+          layer-size 5
+          use-negative-samples 25
+          downsampling-rate 1e-5
+          num-iterations 100
           num-threads (.availableProcessors (Runtime/getRuntime))}
      }]
-     (let [bldr (doto (Word2VecModel/trainer )
-       (.setMinVocabFrequency min-vocab-frequency)
-       (.useNumThreads num-threads))]
-       (.train bldr sentences)
-       )))
+   (let [bldr (doto (Word2VecModel/trainer )
+                (.setLayerSize layer-size)
+                (.setWindowSize window-size)
+                (.type type)
+                (.setInitialLearningRate initial-learning-rate)
+                (.setMinVocabFrequency min-vocab-frequency)
+                (.setDownSamplingRate downsampling-rate)
+                (.useNegativeSamples use-negative-samples)
+                (.setNumIterations num-iterations)
+                (.setMinVocabFrequency min-vocab-frequency)
+                (.useNumThreads num-threads))]
+     (.train bldr sentences)
+     )))
 
 (defn create-input-format
   "Takes a text file and creates the input format required
